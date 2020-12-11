@@ -1,59 +1,64 @@
 package com.fundev.adt;
 
-import com.fundev.adt.exceptions.ResourceNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import com.fundev.adt.coreapi.CommandPatientCreate;
+import com.fundev.adt.coreapi.QueryPatientFind;
+import com.fundev.adt.query.PatientView;
+import org.axonframework.commandhandling.gateway.CommandGateway;
+import org.axonframework.messaging.responsetypes.ResponseTypes;
+import org.axonframework.queryhandling.QueryGateway;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/api/v1")
 public class PatientController {
-    @Autowired
-    private PatientRepository patientRepository;
 
-    @GetMapping("/patients")
-    public List<Patient> getPatients() {
-        return patientRepository.findAll();
+    private final CommandGateway commandGateway;
+    private final QueryGateway queryGateway;
+
+    public PatientController(CommandGateway commandGateway, QueryGateway queryGateway) {
+        this.commandGateway = commandGateway;
+        this.queryGateway = queryGateway;
     }
 
+//    @GetMapping("/patients")
+//    public List<PatientView> getPatients() {
+//        return patientViewRepository.findAll();
+//    }
+
     @GetMapping("/patients/{id}")
-    public ResponseEntity<Patient> getById(@PathVariable(value = "id") Long patientId)
-            throws ResourceNotFoundException {
-        Patient patient = patientRepository.findById(patientId)
-                .orElseThrow(() -> new ResourceNotFoundException("Patient not found for this id :: " + patientId));
-        return ResponseEntity.ok().body(patient);
+    public CompletableFuture<PatientView> getById(@PathVariable(value = "id") String patientId) {
+        return queryGateway.query(new QueryPatientFind(UUID.fromString(patientId)), ResponseTypes.instanceOf(PatientView.class));
     }
 
     @PostMapping("/patients")
-    public Patient create(@RequestBody Patient patient) {
-        return patientRepository.save(patient);
+    public CompletableFuture<UUID> create(@RequestBody PatientView patientView) {
+        return commandGateway.send(new CommandPatientCreate(UUID.randomUUID(), patientView.getFirstName(), patientView.getLastName(), patientView.getBirthDate()));
     }
 
-    @PutMapping("/patients/{id}")
-    public ResponseEntity<Patient> update(@PathVariable(value = "id") Long patientId, @RequestBody Patient patientData) throws ResourceNotFoundException {
-        Patient patient = patientRepository.findById(patientId)
-                .orElseThrow(() -> new ResourceNotFoundException("Patient not found for this id :: " + patientId));
+//    @PutMapping("/patients/{id}")
+//    public ResponseEntity<PatientView> update(@PathVariable(value = "id") Long patientId, @RequestBody PatientView patientViewData) throws ResourceNotFoundException {
+//        PatientView patientView = patientViewRepository.findById(patientId)
+//                .orElseThrow(() -> new ResourceNotFoundException("Patient not found for this id :: " + patientId));
+//
+//        patientView.setFirstName(patientViewData.getFirstName());
+//        patientView.setLastName(patientViewData.getLastName());
+//        patientView.setBirthDate(patientViewData.getBirthDate());
+//        final PatientView updatedPatientView = patientViewRepository.save(patientView);
+//        return ResponseEntity.ok(updatedPatientView);
+//    }
 
-        patient.setFirstName(patientData.getFirstName());
-        patient.setLastName(patientData.getLastName());
-        patient.setBirthDate(patientData.getBirthDate());
-        final Patient updatedPatient = patientRepository.save(patient);
-        return ResponseEntity.ok(updatedPatient);
-    }
-
-    @DeleteMapping("/patients/{id}")
-    public Map<String, Boolean> delete(@PathVariable(value = "id") Long patientId)
-            throws ResourceNotFoundException {
-        Patient patient = patientRepository.findById(patientId)
-                .orElseThrow(() -> new ResourceNotFoundException("Patient not found for this id :: " + patientId));
-
-        patientRepository.delete(patient);
-        Map<String, Boolean> response = new HashMap<>();
-        response.put("deleted", Boolean.TRUE);
-        return response;
-    }
+//    @DeleteMapping("/patients/{id}")
+//    public Map<String, Boolean> delete(@PathVariable(value = "id") Long patientId)
+//            throws ResourceNotFoundException {
+//        PatientView patientView = patientViewRepository.findById(patientId)
+//                .orElseThrow(() -> new ResourceNotFoundException("Patient not found for this id :: " + patientId));
+//
+//        patientViewRepository.delete(patientView);
+//        Map<String, Boolean> response = new HashMap<>();
+//        response.put("deleted", Boolean.TRUE);
+//        return response;
+//    }
 }

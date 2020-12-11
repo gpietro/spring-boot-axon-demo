@@ -1,21 +1,23 @@
-package com.fundev.adt;
+package com.fundev.adt.coreapi;
 
-import javax.persistence.*;
+import org.axonframework.commandhandling.RoutingKey;
+
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.util.Date;
+import java.util.UUID;
 
-@Entity
-@Table(name = "patients")
-public class Patient {
-    private long id;
+public class CommandPatientCreate {
+    @RoutingKey
+    private UUID patientId;
     private String firstName;
     private String lastName;
     private Date birthDate;
 
-    public Patient() {
 
-    }
-
-    public Patient(String firstName, String lastName) {
+    public CommandPatientCreate(UUID patientId, String firstName, String lastName, Date birthDate) {
+        this.patientId = patientId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.birthDate = birthDate;
@@ -23,12 +25,12 @@ public class Patient {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    public long getId() {
-        return id;
+    public UUID getPatientId() {
+        return patientId;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setPatientId(UUID patientId) {
+        this.patientId = patientId;
     }
 
     public String getFirstName() {
