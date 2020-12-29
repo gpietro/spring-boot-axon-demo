@@ -16,7 +16,7 @@
 
     <properties>
         <java.version>11</java.version>
-        <axon.version>4.2.1</axon.version>
+        <axon.version>4.4.5</axon.version>
     </properties>
 
     <dependencies>
@@ -58,6 +58,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>2.10</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

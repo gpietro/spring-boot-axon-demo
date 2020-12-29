@@ -12,8 +12,4 @@ public class QueryPatientFind {
     public UUID getPatientId() {
         return patientId;
     }
-
-    public void setPatientId(UUID patientId) {
-        this.patientId = patientId;
-    }
 }

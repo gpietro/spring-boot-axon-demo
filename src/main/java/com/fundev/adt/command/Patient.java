@@ -5,17 +5,16 @@ import com.fundev.adt.coreapi.EventPatientCreated;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
-import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Profile;
 
 import java.util.Date;
 import java.util.UUID;
 
+import static org.axonframework.modelling.command.AggregateLifecycle.apply;
+
 @Aggregate
-@Profile("command")
 public class Patient {
 
     private static final Logger logger = LoggerFactory.getLogger(Patient.class);
@@ -34,7 +33,7 @@ public class Patient {
     public Patient(CommandPatientCreate command) {
         logger.debug("handling {}", command);
         // Business logic
-        AggregateLifecycle.apply(new EventPatientCreated(command.getPatientId(), command.getFirstName(), command.getLastName(), command.getBirthDate()));
+        apply(new EventPatientCreated(command.getPatientId(), command.getFirstName(), command.getLastName(), command.getBirthDate()));
     }
 
     @EventSourcingHandler

@@ -12,7 +12,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/patients")
 public class PatientController {
 
     private final CommandGateway commandGateway;
@@ -28,14 +28,14 @@ public class PatientController {
 //        return patientViewRepository.findAll();
 //    }
 
-    @GetMapping("/patients/{id}")
+    @GetMapping("{id}")
     public CompletableFuture<PatientView> getById(@PathVariable(value = "id") String patientId) {
         return queryGateway.query(new QueryPatientFind(UUID.fromString(patientId)), ResponseTypes.instanceOf(PatientView.class));
     }
 
-    @PostMapping("/patients")
-    public CompletableFuture<UUID> create(@RequestBody PatientView patientView) {
-        return commandGateway.send(new CommandPatientCreate(UUID.randomUUID(), patientView.getFirstName(), patientView.getLastName(), patientView.getBirthDate()));
+    @PostMapping
+    public CompletableFuture<UUID> create(@RequestBody PatientView patient) {
+        return commandGateway.send(new CommandPatientCreate(UUID.randomUUID(), patient.getFirstName(), patient.getLastName(), patient.getBirthDate()));
     }
 
 //    @PutMapping("/patients/{id}")

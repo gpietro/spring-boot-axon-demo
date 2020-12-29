@@ -10,9 +10,9 @@ import java.util.Optional;
 
 @Component
 public class PatientProjector {
-    private final PatientViewRepository repository;
+    private final QueryPatientRepository repository;
 
-    public PatientProjector(PatientViewRepository repository) {
+    public PatientProjector(QueryPatientRepository repository) {
         this.repository = repository;
     }
 
