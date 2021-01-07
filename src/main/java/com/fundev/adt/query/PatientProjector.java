@@ -1,5 +1,6 @@
 package com.fundev.adt.query;
 
+import com.fundev.adt.coreapi.EventPatientAdmitted;
 import com.fundev.adt.coreapi.EventPatientCreated;
 import com.fundev.adt.coreapi.QueryPatientFind;
 import org.axonframework.eventhandling.EventHandler;
@@ -22,8 +23,17 @@ public class PatientProjector {
         repository.save(patientView);
     }
 
+    @EventHandler
+    public void on(EventPatientAdmitted event) {
+        // TODO: update patient view with event.getStatus();
+        PatientView patientView = repository.findById(event.getPatientId()).orElseThrow();
+        patientView.setStatus(event.getStatus());
+        repository.save(patientView);
+    }
+
     @QueryHandler
     public Optional<PatientView> handle(QueryPatientFind query) {
-        return repository.findById(query.getPatientId());
+        Optional<PatientView> patientView = repository.findById(query.getPatientId());
+        return patientView;
     }
 }

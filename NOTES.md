@@ -115,3 +115,48 @@ However, that doesn't mean the concepts need to be abandoned.
 You can still benefit from many of the advantages of explicit messaging.
 In such environments, **anti-corruption layers** could be implemented as components that handle commands, events and queries, and execute other types of calls (e.g. REST calls) to the external services.
 This way, components that work with explicit messaging do not need to worry about polling external services for changes, or be influenced by the technical challenges caused by different types of APIs.
+
+
+## Kafka
+
+- **Good** for *event streaming*
+- **Bad** for *event sourcing*
+
+**Kafka is not an Event Store (need to load events by ID)**
+
+### Kafka streams
+Stream provide the concept of state stores that could store the Aggregate's event stream as snapshots.
+
+~~It's not possible to build read models because it would required to process all events.~~
+
+One concern with using Kafka for event sourcing is the number of required topics. Typically in event sourcing, there is a stream (topic) of events per entity (such as user, product, etc). This way, the current state of an entity can be reconstituted by re-applying all events in the stream. Each Kafka topic consists of one or more partitions and each partition is stored as a directory on the file system. There will also be pressure from ZooKeeper as the number of znodes increases.
+
+From @axon:
+
+Many people mention Kafka in the context of Event Sourcing since it shares the keyword ‘events’ as a key concept of the system. From its core design as a message delivery solution backed by a transaction log, it does not have an elegant method to store and retrieve event data when you consider the reading and writing requirements. Your choices between storing all events for an aggregate type in a single topic causes command-side scaling issues and the alternative to store aggregate per topic does not scale in Kafka due to the design of topics.
+
+### Partitions
+- a single partitioned topic for aggregate -> problems of scale once we start having millions of Aggregate instances as there will be just too many topics.
+- a single partitioned topic for all Aggregate types -> reading of events will be extremely slow as the entire data set of Aggregate types and instances need to be scanned.
+
+## Event Store
+
+Which solution adopt as EventStore: https://axoniq.io/blog-overview/eventstore
+
+*Team Presco use Oracle*
+
+## Transactional messaging
+
+Through event sourcing
+With the sagas pattern: the event store acts as a message broker
+
+## Transactional outbox
+
+...
+
+
+## GDPR
+
+Common solution to this problem is to encrypt the sensitive attributes, with a different encryption key for each resource. Only give the key to consumers that require it. When the sensitive information needs to be erased, delete the encryption key instead, to ensure the information can never be accessed again. This effectively makes all copies and backups of the sensitive data unusable. This pattern is known as Crypto-Shredding.
+
+[Axon Data Protection module](https://axoniq.io/product-overview/axon-data-protection)

@@ -3,6 +3,7 @@ package com.fundev.adt.coreapi;
 import java.util.Date;
 import java.util.UUID;
 
+// immutable
 public class EventPatientCreated {
     private UUID patientId;
     private String firstName;

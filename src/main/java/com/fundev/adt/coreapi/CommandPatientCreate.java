@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import java.util.Date;
 import java.util.UUID;
 
+// immutable
 public class CommandPatientCreate {
     @RoutingKey
     private UUID patientId;

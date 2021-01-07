@@ -1,5 +1,7 @@
 package com.fundev.adt.query;
 
+import com.fundev.adt.datatypes.EpisodeOfCareStatus;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.util.Date;
@@ -12,6 +14,7 @@ public class PatientView {
     private String firstName;
     private String lastName;
     private Date birthDate;
+    private EpisodeOfCareStatus status;
 
     public PatientView() {
 
@@ -28,6 +31,10 @@ public class PatientView {
         return patientId;
     }
 
+    public EpisodeOfCareStatus getStatus() {
+        return status;
+    }
+
     public String getFirstName() {
         return firstName;
     }
@@ -38,5 +45,9 @@ public class PatientView {
 
     public Date getBirthDate() {
         return birthDate;
+    }
+
+    public void setStatus(EpisodeOfCareStatus status) {
+        this.status = status;
     }
 }

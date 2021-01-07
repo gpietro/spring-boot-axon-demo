@@ -1,13 +1,16 @@
 package com.fundev.adt;
 
+import com.fundev.adt.coreapi.CommandPatientAdmit;
 import com.fundev.adt.coreapi.CommandPatientCreate;
 import com.fundev.adt.coreapi.QueryPatientFind;
+import com.fundev.adt.datatypes.EpisodeOfCareStatus;
 import com.fundev.adt.query.PatientView;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -36,6 +39,11 @@ public class PatientController {
     @PostMapping
     public CompletableFuture<UUID> create(@RequestBody PatientView patient) {
         return commandGateway.send(new CommandPatientCreate(UUID.randomUUID(), patient.getFirstName(), patient.getLastName(), patient.getBirthDate()));
+    }
+
+    @PostMapping("{id}/admit")
+    public CompletableFuture<PatientView> admit(@PathVariable(value = "id") String patientId) {
+        return commandGateway.send(new CommandPatientAdmit(UUID.randomUUID(), UUID.fromString(patientId), EpisodeOfCareStatus.ACTIVE, new Date(), null));
     }
 
 //    @PutMapping("/patients/{id}")
