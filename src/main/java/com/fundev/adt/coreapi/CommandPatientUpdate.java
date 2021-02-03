@@ -2,6 +2,7 @@ package com.fundev.adt.coreapi;
 
 import org.axonframework.commandhandling.RoutingKey;
 import org.axonframework.modelling.command.TargetAggregateIdentifier;
+import org.axonframework.modelling.command.TargetAggregateVersion;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -10,21 +11,22 @@ import java.util.Date;
 import java.util.UUID;
 
 // immutable
-public class CommandPatientCreate {
+public class CommandPatientUpdate {
+    @TargetAggregateVersion
+    private final Long version;
     @TargetAggregateIdentifier
     private UUID patientId;
     private String firstName;
     private String lastName;
     private Date birthDate;
-    private String address;
 
 
-    public CommandPatientCreate(UUID patientId, String firstName, String lastName, Date birthDate, String address) {
+    public CommandPatientUpdate(Long version, UUID patientId, String firstName, String lastName, Date birthDate) {
+        this.version = version;
         this.patientId = patientId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.birthDate = birthDate;
-        this.address = address;
     }
 
     @Id
@@ -45,5 +47,7 @@ public class CommandPatientCreate {
         return birthDate;
     }
 
-    public String getAddress() { return address; }
+    public Long getVersion() {
+        return version;
+    }
 }

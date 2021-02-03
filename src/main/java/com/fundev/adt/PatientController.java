@@ -1,8 +1,6 @@
 package com.fundev.adt;
 
-import com.fundev.adt.coreapi.CommandPatientAdmit;
-import com.fundev.adt.coreapi.CommandPatientCreate;
-import com.fundev.adt.coreapi.QueryPatientFind;
+import com.fundev.adt.coreapi.*;
 import com.fundev.adt.datatypes.EpisodeOfCareStatus;
 import com.fundev.adt.query.PatientView;
 import org.axonframework.commandhandling.gateway.CommandGateway;
@@ -18,6 +16,8 @@ import java.util.concurrent.CompletableFuture;
 @RequestMapping("/api/v1/patients")
 public class PatientController {
 
+    // TODO: split read and write?
+
     private final CommandGateway commandGateway;
     private final QueryGateway queryGateway;
 
@@ -26,24 +26,40 @@ public class PatientController {
         this.queryGateway = queryGateway;
     }
 
-//    @GetMapping("/patients")
-//    public List<PatientView> getPatients() {
-//        return patientViewRepository.findAll();
-//    }
-
     @GetMapping("{id}")
     public CompletableFuture<PatientView> getById(@PathVariable(value = "id") String patientId) {
         return queryGateway.query(new QueryPatientFind(UUID.fromString(patientId)), ResponseTypes.instanceOf(PatientView.class));
     }
 
+    // TODO: define form data
     @PostMapping
     public CompletableFuture<UUID> create(@RequestBody PatientView patient) {
-        return commandGateway.send(new CommandPatientCreate(UUID.randomUUID(), patient.getFirstName(), patient.getLastName(), patient.getBirthDate()));
+        return commandGateway.send(new CommandPatientCreate(UUID.randomUUID(), patient.getFirstName(), patient.getLastName(), patient.getBirthDate(), "Via monda 13"));
     }
 
+    // TODO: replace patientView with post data model
+    @PutMapping("{id}")
+    public CompletableFuture<UUID> update(@PathVariable(value = "id") String patientId, @RequestBody PatientView patient) {
+        return commandGateway.send(new CommandPatientUpdate(patient.getVersion(), UUID.fromString(patientId), patient.getFirstName(), patient.getLastName(), patient.getBirthDate()));
+    }
+
+    @DeleteMapping("{id}")
+    public CompletableFuture<UUID> delete(@PathVariable(value = "id") String patientId) {
+        // add flag deleted
+        return commandGateway.send(new CommandPatientDelete(UUID.fromString(patientId)));
+    }
+
+    // TODO: move to EpisodeOfCareController?
     @PostMapping("{id}/admit")
     public CompletableFuture<PatientView> admit(@PathVariable(value = "id") String patientId) {
+        // TODO: add wardId
         return commandGateway.send(new CommandPatientAdmit(UUID.randomUUID(), UUID.fromString(patientId), EpisodeOfCareStatus.ACTIVE, new Date(), null));
+    }
+
+    @PostMapping("{episodeOfCareId}/dismiss")
+    public CompletableFuture<UUID> dismiss(@PathVariable(value = "id") String patientId, @PathVariable(value="episodeOfCareId") String episodeOfCareId) {
+        // TODO: add wardId
+        return commandGateway.send(new CommandPatientDismiss(UUID.fromString(episodeOfCareId), UUID.fromString(patientId), new Date()));
     }
 
 //    @PutMapping("/patients/{id}")
