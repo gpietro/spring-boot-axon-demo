@@ -1,7 +1,12 @@
 package com.fundev.adt.command;
 
-import com.fundev.adt.coreapi.*;
 import com.fundev.adt.datatypes.EpisodeOfCareStatus;
+import com.fundev.adt.modules.episodeOfCare.api.CommandEpisodeOfCareAdmit;
+import com.fundev.adt.modules.episodeOfCare.api.CommandEpisodeOfCareDischarge;
+import com.fundev.adt.modules.episodeOfCare.api.EventEpisodeOfCareAdmitted;
+import com.fundev.adt.modules.episodeOfCare.api.EventEpisodeOfCareDischarged;
+import com.fundev.adt.modules.patient.api.*;
+import com.fundev.adt.modules.patient.command.Patient;
 import org.axonframework.test.aggregate.AggregateTestFixture;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeAll;
@@ -26,7 +31,7 @@ public class PatientTest {
         String lastName = "Ghezzi";
         Date birthDate = new DateTime(1986, 6, 28, 0, 0, 0, 0).toDate();
         CommandPatientCreate commandPatientCreate = new CommandPatientCreate(patientId, firstName, lastName, birthDate, "");
-        EventPatientCreated eventPatientCreated = new EventPatientCreated(patientId, firstName, lastName, birthDate, "");
+        EventPatientCreated eventPatientCreated = new EventPatientCreated(patientId,  firstName, lastName, birthDate, "");
         fixture.givenNoPriorActivity().when(commandPatientCreate).expectSuccessfulHandlerExecution()
                 .expectEvents(eventPatientCreated);
     }
@@ -65,10 +70,10 @@ public class PatientTest {
         Date start = new DateTime(2021, 1, 27, 10, 0, 0, 0).toDate();
         Date end = new DateTime(2021, 2, 10, 10, 0, 0, 0).toDate();
         EventPatientCreated eventPatientCreated = new EventPatientCreated(patientId, "Daniel", "Maldini", birthDate, "");
-        CommandPatientAdmit commandPatientAdmit = new CommandPatientAdmit(episodeOfCareId, patientId, status, start, end);
-        EventPatientAdmitted eventPatientAdmitted = new EventPatientAdmitted(episodeOfCareId, patientId, status, start, end);
+        CommandEpisodeOfCareAdmit commandEpisodeOfCareAdmit = new CommandEpisodeOfCareAdmit(episodeOfCareId, patientId, status, start, end);
+        EventEpisodeOfCareAdmitted eventEpisodeOfCareAdmitted = new EventEpisodeOfCareAdmitted(episodeOfCareId, patientId, status, start, end);
 
-        fixture.given(eventPatientCreated).when(commandPatientAdmit).expectSuccessfulHandlerExecution().expectEvents(eventPatientAdmitted);
+        fixture.given(eventPatientCreated).when(commandEpisodeOfCareAdmit).expectSuccessfulHandlerExecution().expectEvents(eventEpisodeOfCareAdmitted);
     }
 
     @Test
@@ -80,12 +85,12 @@ public class PatientTest {
         Date start = new DateTime(2021, 1, 27, 10, 0, 0, 0).toDate();
         Date end = new DateTime(2021, 2, 10, 10, 0, 0, 0).toDate();
         EventPatientCreated eventPatientCreated = new EventPatientCreated(patientId, "Daniel", "Maldini", birthDate, "");
-        EventPatientAdmitted eventPatientAdmitted = new EventPatientAdmitted(episodeOfCareId, patientId, status, start, end);
-        CommandPatientDismiss commandPatientDismiss = new CommandPatientDismiss(episodeOfCareId, patientId, end);
-        EventPatientDismissed eventPatientDismissed = new EventPatientDismissed(episodeOfCareId, patientId, end);
+        EventEpisodeOfCareAdmitted eventEpisodeOfCareAdmitted = new EventEpisodeOfCareAdmitted(episodeOfCareId, patientId, status, start, end);
+        CommandEpisodeOfCareDischarge commandEpisodeOfCareDischarge = new CommandEpisodeOfCareDischarge(episodeOfCareId, patientId, 1L, end);
+        EventEpisodeOfCareDischarged eventEpisodeOfCareDischarged = new EventEpisodeOfCareDischarged(episodeOfCareId, patientId, 1L, end);
 
 
-        fixture.given(eventPatientCreated, eventPatientAdmitted).when(commandPatientDismiss).expectSuccessfulHandlerExecution().expectEvents(eventPatientDismissed);
+        fixture.given(eventPatientCreated, eventEpisodeOfCareAdmitted).when(commandEpisodeOfCareDischarge).expectSuccessfulHandlerExecution().expectEvents(eventEpisodeOfCareDischarged);
     }
 
 }

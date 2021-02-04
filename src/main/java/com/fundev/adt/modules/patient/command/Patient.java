@@ -1,6 +1,8 @@
-package com.fundev.adt.command;
+package com.fundev.adt.modules.patient.command;
 
-import com.fundev.adt.coreapi.*;
+import com.fundev.adt.modules.patient.api.*;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventhandling.DomainEventMessage;
 import org.axonframework.eventsourcing.EventSourcingHandler;
@@ -11,22 +13,19 @@ import org.axonframework.spring.stereotype.Aggregate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Predicate;
 
 import static org.axonframework.modelling.command.AggregateLifecycle.apply;
 import static org.axonframework.modelling.command.AggregateLifecycle.markDeleted;
 
 @Aggregate
+@ToString
+@NoArgsConstructor
 public class Patient {
 
-    private static final List<Class<? extends Object>> PATIENT_CHANGING_EVENT_TYPES = Arrays
-            .asList(EventPatientUpdated.class);
+    private static final List<Class<? extends Object>> PATIENT_CHANGING_EVENT_TYPES = Collections.singletonList(EventPatientUpdated.class);
 
-    // TODO: study more in deep
     private static Predicate<List<DomainEventMessage<?>>> patientChangingEventMatching() {
         return Conflicts.payloadMatching(event -> PATIENT_CHANGING_EVENT_TYPES.stream()
                 .anyMatch(type -> type.isAssignableFrom(event.getClass())));
@@ -39,10 +38,6 @@ public class Patient {
     private String firstName;
     private String lastName;
     private Date birthDate;
-
-    public Patient() {
-        // Required By Axon
-    }
 
     @CommandHandler
     public Patient(CommandPatientCreate command) {
@@ -88,15 +83,5 @@ public class Patient {
     @EventSourcingHandler
     public void on(EventPatientDeleted event) {
         markDeleted();
-    }
-
-    @Override
-    public String toString() {
-        return "Patient{" +
-                "patientId=" + patientId +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", birthDate=" + birthDate +
-                '}';
     }
 }

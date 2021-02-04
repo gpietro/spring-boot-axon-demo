@@ -1,13 +1,11 @@
-package com.fundev.adt.coreapi;
+package com.fundev.adt.modules.patient.api;
 
-import java.util.Date;
 import java.util.UUID;
 
-// immutable
-public class EventPatientDeleted {
+public class QueryPatientFind {
     private UUID patientId;
 
-    public EventPatientDeleted(UUID patientId) {
+    public QueryPatientFind(UUID patientId) {
         this.patientId = patientId;
     }
 

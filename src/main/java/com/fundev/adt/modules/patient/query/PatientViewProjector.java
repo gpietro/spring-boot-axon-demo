@@ -1,6 +1,9 @@
-package com.fundev.adt.query;
+package com.fundev.adt.modules.patient.query;
 
-import com.fundev.adt.coreapi.*;
+import com.fundev.adt.modules.patient.api.EventPatientCreated;
+import com.fundev.adt.modules.patient.api.EventPatientDeleted;
+import com.fundev.adt.modules.patient.api.EventPatientUpdated;
+import com.fundev.adt.modules.patient.api.QueryPatientFind;
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.eventhandling.SequenceNumber;
 import org.axonframework.queryhandling.QueryHandler;
@@ -9,16 +12,17 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 @Component
-public class PatientProjector {
-    private final QueryPatientRepository repository;
+public class PatientViewProjector {
+    private final PatientViewQueryRepository repository;
 
-    public PatientProjector(QueryPatientRepository repository) {
+    public PatientViewProjector(PatientViewQueryRepository repository) {
         this.repository = repository;
     }
 
     @EventHandler
     public void on(EventPatientCreated event) {
         PatientView patientView = new PatientView(event.getPatientId(), event.getFirstName(), event.getLastName(), event.getBirthDate());
+        patientView.setVersion(1L);
         repository.save(patientView);
     }
 
@@ -37,27 +41,8 @@ public class PatientProjector {
         repository.deleteById(event.getPatientId());
     }
 
-    @EventHandler
-    public void on(EventPatientAdmitted event) {
-        // TODO: update patient view with event.getStatus();
-        PatientView patientView = repository.findById(event.getPatientId()).orElseThrow();
-        patientView.setStatus(event.getStatus());
-        patientView.setStart(event.getStart());
-        repository.save(patientView);
-    }
-
-    @EventHandler
-    public void on(EventPatientDismissed event) {
-        // TODO: update patient view with event.getStatus();
-        PatientView patientView = repository.findById(event.getPatientId()).orElseThrow();
-        patientView.setStatus(event.getStatus());
-        patientView.setEnd(event.getEnd());
-        repository.save(patientView);
-    }
-
     @QueryHandler
     public Optional<PatientView> handle(QueryPatientFind query) {
-        Optional<PatientView> patientView = repository.findById(query.getPatientId());
-        return patientView;
+        return repository.findById(query.getPatientId());
     }
 }

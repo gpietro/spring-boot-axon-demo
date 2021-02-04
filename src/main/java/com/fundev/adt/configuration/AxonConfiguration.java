@@ -1,6 +1,6 @@
 package com.fundev.adt.configuration;
 
-import com.fundev.adt.coreapi.EventPatientCreatedUpcaster;
+import com.fundev.adt.modules.patient.api.EventPatientCreatedUpcaster;
 import org.axonframework.common.jpa.EntityManagerProvider;
 import org.axonframework.common.transaction.TransactionManager;
 import org.axonframework.eventsourcing.eventstore.jpa.JpaEventStorageEngine;

@@ -1,4 +1,4 @@
-package com.fundev.adt.coreapi;
+package com.fundev.adt.modules.patient.api;
 
 import org.axonframework.serialization.SimpleSerializedType;
 import org.axonframework.serialization.upcasting.event.IntermediateEventRepresentation;
