@@ -9,6 +9,6 @@ import java.util.UUID;
 @Value
 @AllArgsConstructor
 @Getter
-public class EventPatientDeleted {
+public class QueryPatientFindById {
     UUID patientId;
 }

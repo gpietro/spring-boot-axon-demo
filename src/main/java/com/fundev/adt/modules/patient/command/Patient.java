@@ -12,6 +12,7 @@ import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.spring.stereotype.Aggregate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -42,16 +43,19 @@ public class Patient {
     @CommandHandler
     public Patient(CommandPatientCreate command) {
         logger.debug("handling {}", command);
-        // Business logic
-        // TODO patient validation
+
+        Assert.notNull(command.getFirstName(), "Firstname is required");
+
         apply(new EventPatientCreated(command.getPatientId(), command.getFirstName(), command.getLastName(), command.getBirthDate(), command.getAddress()));
     }
 
     @CommandHandler
     void on(CommandPatientUpdate command, ConflictResolver conflictResolver) {
-        conflictResolver.detectConflicts(patientChangingEventMatching());
         logger.debug("handling {}", command);
-        // TODO patient validation
+        conflictResolver.detectConflicts(patientChangingEventMatching());
+
+        Assert.notNull(command.getFirstName(), "Firstname is required");
+
         apply(new EventPatientUpdated(command.getPatientId(), command.getFirstName(), command.getLastName(), command.getBirthDate()));
     }
 

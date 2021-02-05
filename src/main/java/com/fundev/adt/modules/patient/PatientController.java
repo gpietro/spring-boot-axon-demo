@@ -1,15 +1,13 @@
 package com.fundev.adt.modules.patient;
 
-import com.fundev.adt.modules.patient.api.CommandPatientCreate;
-import com.fundev.adt.modules.patient.api.CommandPatientDelete;
-import com.fundev.adt.modules.patient.api.CommandPatientUpdate;
-import com.fundev.adt.modules.patient.api.QueryPatientFind;
+import com.fundev.adt.modules.patient.api.*;
 import com.fundev.adt.modules.patient.query.PatientView;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -28,8 +26,13 @@ public class PatientController {
     }
 
     @GetMapping("{id}")
-    public CompletableFuture<PatientView> getById(@PathVariable(value = "id") String patientId) {
-        return queryGateway.query(new QueryPatientFind(UUID.fromString(patientId)), ResponseTypes.instanceOf(PatientView.class));
+    public CompletableFuture<PatientView> getPatientById(@PathVariable(value = "id") String patientId) {
+        return queryGateway.query(new QueryPatientFindById(UUID.fromString(patientId)), ResponseTypes.instanceOf(PatientView.class));
+    }
+
+    @GetMapping
+    public CompletableFuture<List<PatientView>> getPatients() {
+        return queryGateway.query(new QueryPatientFindAll(), ResponseTypes.multipleInstancesOf(PatientView.class));
     }
 
     // TODO: define form data

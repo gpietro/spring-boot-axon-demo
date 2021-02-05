@@ -44,7 +44,7 @@ public class EpisodeOfCare {
     @CommandHandler
     public void on(CommandEpisodeOfCareDischarge command) {
         logger.debug("handling {}", command);
-        Assert.isTrue(EpisodeOfCareStatus.ACTIVE == this.status, "The patient treatment is not active and cannot be dismissed");
+        Assert.state(EpisodeOfCareStatus.ACTIVE == this.status, "The patient treatment is not active and cannot be dismissed");
         apply(new EventEpisodeOfCareDischarged(command.getEpisodeOfCareId(), command.getPatientId(), command.getVersion(), command.getEnd()));
     }
 
