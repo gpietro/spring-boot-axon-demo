@@ -1,6 +1,6 @@
-package com.fundev.adt.modules.patient.query;
+package com.fundev.adt.query;
 
-import com.fundev.adt.modules.patient.api.*;
+import com.fundev.adt.api.*;
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.eventhandling.SequenceNumber;
 import org.axonframework.queryhandling.QueryHandler;

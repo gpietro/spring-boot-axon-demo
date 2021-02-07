@@ -1,16 +1,16 @@
-package com.fundev.adt.modules.patient.api;
+package com.fundev.adt.api;
 
 import lombok.AllArgsConstructor;
 import lombok.Value;
-import org.axonframework.serialization.Revision;
+import org.axonframework.modelling.command.TargetAggregateIdentifier;
 
 import java.util.Date;
 import java.util.UUID;
 
 @Value
 @AllArgsConstructor
-@Revision("2.0")
-public class EventPatientCreated {
+public class CommandPatientCreate {
+    @TargetAggregateIdentifier
     UUID patientId;
     String firstName;
     String lastName;

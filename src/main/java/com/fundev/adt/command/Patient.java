@@ -1,6 +1,7 @@
-package com.fundev.adt.modules.patient.command;
+package com.fundev.adt.command;
 
-import com.fundev.adt.modules.patient.api.*;
+import com.fundev.adt.datatypes.EpisodeOfCareStatus;
+import com.fundev.adt.api.*;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.axonframework.commandhandling.CommandHandler;
@@ -9,6 +10,7 @@ import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.eventsourcing.conflictresolution.ConflictResolver;
 import org.axonframework.eventsourcing.conflictresolution.Conflicts;
 import org.axonframework.modelling.command.AggregateIdentifier;
+import org.axonframework.modelling.command.AggregateMember;
 import org.axonframework.spring.stereotype.Aggregate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,27 +28,29 @@ import static org.axonframework.modelling.command.AggregateLifecycle.markDeleted
 public class Patient {
 
     private static final List<Class<? extends Object>> PATIENT_CHANGING_EVENT_TYPES = Collections.singletonList(EventPatientUpdated.class);
-
-    private static Predicate<List<DomainEventMessage<?>>> patientChangingEventMatching() {
-        return Conflicts.payloadMatching(event -> PATIENT_CHANGING_EVENT_TYPES.stream()
-                .anyMatch(type -> type.isAssignableFrom(event.getClass())));
-    }
-
     private static final Logger logger = LoggerFactory.getLogger(Patient.class);
-
     @AggregateIdentifier
     private UUID patientId;
     private String firstName;
     private String lastName;
     private Date birthDate;
+    @AggregateMember
+    private List<EpisodeOfCare> episodesOfCare = new ArrayList<>();
 
     @CommandHandler
     public Patient(CommandPatientCreate command) {
         logger.debug("handling {}", command);
 
         Assert.notNull(command.getFirstName(), "Firstname is required");
+        Assert.notNull(command.getLastName(), "Lastname is required");
+        //...
 
         apply(new EventPatientCreated(command.getPatientId(), command.getFirstName(), command.getLastName(), command.getBirthDate(), command.getAddress()));
+    }
+
+    private static Predicate<List<DomainEventMessage<?>>> patientChangingEventMatching() {
+        return Conflicts.payloadMatching(event -> PATIENT_CHANGING_EVENT_TYPES.stream()
+                .anyMatch(type -> type.isAssignableFrom(event.getClass())));
     }
 
     @CommandHandler
@@ -55,6 +59,8 @@ public class Patient {
         conflictResolver.detectConflicts(patientChangingEventMatching());
 
         Assert.notNull(command.getFirstName(), "Firstname is required");
+        Assert.notNull(command.getLastName(), "Lastname is required");
+        //...
 
         apply(new EventPatientUpdated(command.getPatientId(), command.getFirstName(), command.getLastName(), command.getBirthDate()));
     }
@@ -63,6 +69,22 @@ public class Patient {
     void on(CommandPatientDelete command) {
         logger.debug("handling {}", command);
         apply(new EventPatientDeleted(command.getPatientId()));
+    }
+
+    @CommandHandler
+    void on(CommandPatientAdmit command) {
+        apply(new EventPatientAdmitted(command.getPatientId(), command.getPatientAdmission()));
+    }
+
+    @CommandHandler
+    void on(CommandPatientDischarge command) {
+        Optional<EpisodeOfCare> episodeOfCare = this.episodesOfCare.stream()
+                .filter(episode -> episode.getEpisodeOfCareId().equals(command.getEpisodeOfCareId())).findFirst();
+        if( episodeOfCare.isPresent()) {
+            Assert.state(episodeOfCare.get().getStatus() == EpisodeOfCareStatus.ACTIVE, "Cannot discharge the patient with not active status");
+            apply(new EventPatientDischarged(command.getPatientId(), command.getEpisodeOfCareId(), command.getEnd()));
+        }
+        // TODO: dispatch Episode of care not found event
     }
 
     @EventSourcingHandler
@@ -88,4 +110,15 @@ public class Patient {
     public void on(EventPatientDeleted event) {
         markDeleted();
     }
+
+    @EventSourcingHandler
+    public void on(EventPatientAdmitted event) {
+        this.episodesOfCare.add(new EpisodeOfCare(event.getPatientAdmission().getEpisodeOfCareId(), event.getPatientAdmission().getStatus(), event.getPatientAdmission().getStart(), event.getPatientAdmission().getEnd()));
+    }
+
+    @EventSourcingHandler
+    public void on(EventPatientDischarged event) {
+        // Remove episode from Patient?
+    }
+
 }

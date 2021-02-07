@@ -1,7 +1,7 @@
-package com.fundev.adt.modules.patient;
+package com.fundev.adt;
 
-import com.fundev.adt.modules.patient.api.*;
-import com.fundev.adt.modules.patient.query.PatientView;
+import com.fundev.adt.api.*;
+import com.fundev.adt.query.PatientView;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;

@@ -1,4 +1,4 @@
-package com.fundev.adt.modules.patient.query;
+package com.fundev.adt.query;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

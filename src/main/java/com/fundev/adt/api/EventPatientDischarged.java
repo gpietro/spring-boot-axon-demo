@@ -1,4 +1,4 @@
-package com.fundev.adt.modules.episodeOfCare.api;
+package com.fundev.adt.api;
 
 import com.fundev.adt.datatypes.EpisodeOfCareStatus;
 import lombok.AllArgsConstructor;
@@ -9,11 +9,9 @@ import java.util.UUID;
 
 @Value
 @AllArgsConstructor
-public class EventEpisodeOfCareDischarged {
-
-    UUID episodeOfCareId;
+public class EventPatientDischarged {
     UUID patientId;
-    Long version;
+    UUID episodeOfCareId;
     Date end;
     EpisodeOfCareStatus status = EpisodeOfCareStatus.FINISHED;
 }

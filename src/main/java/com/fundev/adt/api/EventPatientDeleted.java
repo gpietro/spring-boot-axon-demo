@@ -1,4 +1,4 @@
-package com.fundev.adt.modules.patient.api;
+package com.fundev.adt.api;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,7 +8,6 @@ import java.util.UUID;
 
 @Value
 @AllArgsConstructor
-@Getter
 public class EventPatientDeleted {
     UUID patientId;
 }

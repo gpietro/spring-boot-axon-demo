@@ -1,13 +1,10 @@
-## Run application with docker
-**Build image (not working yet)**
+# PoC Axon Framework for ADT Patient solution following
 
-```docker build -t cqrs-adt-demo .```
+This PoC aims to evaluate the usage of Axon Framework for the development of an Admission Dismission Transfer Patient
+solution follwing the CQRS pattern.
 
-**Run the application**
+### Run Axon Server SE with docker
 
-```docker run -p 8080:8080 cqrs-adt-demo```
-
-**Run Axon Server SE**
 ```
 docker run -d --rm --name axonserver-se -p 8024:8024 -p 8124:8124 \
        -v `pwd`/data:/data \
@@ -15,3 +12,13 @@ docker run -d --rm --name axonserver-se -p 8024:8024 -p 8124:8124 \
        -v `pwd`/config:/config \
        axoniq/axonserver
 ```
+
+### Run application with docker (not working yet)
+
+**Build image**
+
+```docker build -t cqrs-adt-demo .```
+
+**Run the application**
+
+```docker run -p 8080:8080 cqrs-adt-demo```

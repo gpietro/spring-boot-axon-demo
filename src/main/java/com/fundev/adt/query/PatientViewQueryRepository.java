@@ -1,4 +1,4 @@
-package com.fundev.adt.modules.patient.query;
+package com.fundev.adt.query;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

@@ -1,17 +1,17 @@
-package com.fundev.adt.modules.patient.api;
+package com.fundev.adt.api;
 
 import lombok.AllArgsConstructor;
 import lombok.Value;
 import org.axonframework.modelling.command.TargetAggregateIdentifier;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import java.util.Date;
 import java.util.UUID;
 
 @Value
 @AllArgsConstructor
-public class CommandPatientDelete {
+public class CommandPatientDischarge {
     @TargetAggregateIdentifier
     UUID patientId;
+    UUID episodeOfCareId;
+    Date end;
 }
