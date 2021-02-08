@@ -73,11 +73,13 @@ public class Patient {
 
     @CommandHandler
     void on(CommandPatientAdmit command) {
+        logger.debug("handling {}", command);
         apply(new EventPatientAdmitted(command.getPatientId(), command.getPatientAdmission()));
     }
 
     @CommandHandler
     void on(CommandPatientDischarge command) {
+        logger.debug("handling {}", command);
         Optional<EpisodeOfCare> episodeOfCare = this.episodesOfCare.stream()
                 .filter(episode -> episode.getEpisodeOfCareId().equals(command.getEpisodeOfCareId())).findFirst();
         if( episodeOfCare.isPresent()) {
@@ -108,16 +110,19 @@ public class Patient {
 
     @EventSourcingHandler
     public void on(EventPatientDeleted event) {
+        logger.debug("applying {}", event);
         markDeleted();
     }
 
     @EventSourcingHandler
     public void on(EventPatientAdmitted event) {
+        logger.debug("applying {}", event);
         this.episodesOfCare.add(new EpisodeOfCare(event.getPatientAdmission().getEpisodeOfCareId(), event.getPatientAdmission().getStatus(), event.getPatientAdmission().getStart(), event.getPatientAdmission().getEnd()));
     }
 
     @EventSourcingHandler
     public void on(EventPatientDischarged event) {
+        logger.debug("applying {}", event);
         // Remove episode from Patient?
     }
 
