@@ -1,4 +1,4 @@
-# PoC Axon Framework for ADT Patient solution following
+# PoC Axon Framework for ADT Patient
 
 This PoC aims to evaluate the usage of Axon Framework for the development of an Admission Dismission Transfer Patient
 solution follwing the CQRS pattern.
